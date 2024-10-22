@@ -1,0 +1,110 @@
+﻿@page "/weather"
+@inject IAmazonDynamoDB DynamoDbClient
+@using Amazon.DynamoDBv2
+@using Amazon.DynamoDBv2.Model
+@using Amazon.Util
+@attribute [StreamRendering]
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Historial Plantas</h1>
+
+<p>Este componente se utiliza para ver la información de las plantas a lo largo del tiempo.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Temperatura</th>
+                <th>Porcentaje de Hidratación</th>
+                <th>Necesita ser cortada</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.Humedad</td>
+                    @if (Double.Parse(forecast.Cortada) < 0.5)
+                        {
+                        <td>No</td>
+                    }
+                    else
+                    {
+                        <td>Sí</td>
+                    }
+
+                       
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private AppData[]? forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate asynchronous loading to demonstrate streaming rendering
+        await Task.Delay(500);
+        DateTime twoWeeksAgoDate = DateTime.UtcNow - TimeSpan.FromDays(15);
+        string twoWeeksAgoString = twoWeeksAgoDate.ToString(AWSSDKUtils.ISO8601DateFormat);
+        ScanResponse response = new ScanResponse();
+        var request = new ScanRequest
+            {
+                TableName = "datosapp",
+            };
+        try
+        {
+            response = await DynamoDbClient.ScanAsync(request);
+            Console.WriteLine("Elemento insertado correctamente.");
+        }
+        catch (AmazonDynamoDBException ex)
+        {
+            Console.WriteLine("Error al insertar el elemento: " + ex.Message);
+        }
+        forecasts = new AppData[response.Items.Count];
+        var contador = 0;
+        foreach (var item in response.Items)
+        {
+            // Procesar cada elemento
+            forecasts[contador] = new AppData
+                {
+                    Date = DateTime.Parse(item["Id"].S).ToString("dd/MM/yyyy hh:mm"),
+                    TemperatureC = item["ValorTemp"].S.Substring(0, 4),
+                    Humedad = item["ValorHumedad"].S.Substring(0, 4),
+                    Cortada = item["ValorCorte"].S.Substring(0, 4),
+
+                };
+            contador++;
+
+            // ... (procesar otros atributos)
+        }
+        // var startDate = DateOnly.FromDateTime(DateTime.Now);
+        // var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
+        // forecasts = Enumerable.Range(1, 5).Select(index => new AppData
+        // {
+        //     Date = startDate.AddDays(index),
+        //     TemperatureC = Random.Shared.Next(-20, 55),
+        //     Summary = summaries[Random.Shared.Next(summaries.Length)]
+        // }).ToArray();
+    }
+
+    private class AppData
+    {
+        public string? Date { get; set; }
+        public string? TemperatureC { get; set; }
+        public string? Humedad { get; set; }
+        public string? Cortada { get; set; }
+
+    }
+}

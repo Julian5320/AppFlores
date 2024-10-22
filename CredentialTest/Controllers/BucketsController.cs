@@ -7,20 +7,17 @@ namespace CredentialTest.Controllers
     [ApiController]
     public class BucketsController:ControllerBase
     {
-        private readonly IConfiguration _configuration;
+        private readonly IAmazonS3 _amazonS3;
 
-        public BucketsController(IConfiguration configuration)
+        public BucketsController(IAmazonS3 amazonS3)
         {
-            _configuration = configuration;
+            _amazonS3 = amazonS3;
         }
 
         [HttpGet("list")]
         public async Task<IActionResult> ListAsync()
         {
-            var accessKey = _configuration.GetValue<string>("AWS:AccessKey");
-            var secretKey = _configuration.GetValue<string>("AWS:SecretKey");
-            var s3Client = new AmazonS3Client(accessKey, secretKey);
-            var data = await s3Client.ListBucketsAsync();
+            var data = await _amazonS3.ListBucketsAsync();
             var buckets = data.Buckets.Select(b => { return b.BucketName; });
             return Ok(buckets);
         }

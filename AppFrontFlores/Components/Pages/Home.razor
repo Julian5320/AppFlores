@@ -1,0 +1,25 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<div class="container">
+    <h1>Descripción General de la Aplicación IoT</h1>
+    <p>La aplicación tiene como objetivo obtener datos de sensores, procesarlos mediante una función Lambda en la nube de AWS y luego almacenar la información en Amazon DynamoDB. Además, la aplicación proporciona una funcionalidad para consultar los datos almacenados en DynamoDB.</p>
+
+    <h2>Componentes Clave</h2>
+
+    <div class="component">
+        <h4>Sensores (IoT Devices)</h4>
+        <p>Los sensores generan datos en tiempo real, como temperaturas, humedad, y fecha de corte.</p>
+    </div>
+
+    <div class="component">
+        <h4>AWS Lambda</h4>
+        <p>AWS Lambda se utiliza para procesar los datos que llegan de los sensores. La función Lambda recibe los datos, los procesa si es necesario (como la transformación o la validación de los datos), y luego los almacena en una base de datos.</p>
+    </div>
+
+    <div class="component">
+        <h4>Amazon DynamoDB</h4>
+        <p>Amazon DynamoDB almacena los datos de los sensores, que se guardan en tablas para su posterior consulta.</p>
+    </div>
+</div>

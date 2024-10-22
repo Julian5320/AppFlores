@@ -1,0 +1,90 @@
+﻿@page "/counter"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Mvc
+@using Newtonsoft.Json
+<PageTitle>Counter</PageTitle>
+@attribute [StreamRendering]
+
+<h1>Consultar Datos</h1>
+
+@if (appData.TemperatureC == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Temperatura</th>
+                <th>Fecha</th>
+                <th>Humedad</th>
+                <th>Necesita Corte</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@appData.TemperatureC</td>
+                <td>@appData.Date</td>
+                <td>@appData.Humedad</td>
+                <td>
+                    @if (Double.Parse(appData.Cortada) < 0.5)
+                    {
+                        <p>No</p>
+                    }
+                    else
+                    {
+                        <p>Sí</p>
+                    }
+                </td>
+            </tr>
+        </tbody>
+    </table>
+}
+
+<button class="btn btn-primary" @onclick="IncrementCount">Consultar</button>
+
+@code {
+    private AppData appData = new AppData();
+
+    // Cambié el método a Task en vez de void
+    private async Task IncrementCount()
+    {
+        using (var client = new HttpClient())
+        {
+            // Especificar la URL del endpoint
+            string url = "https://1gmlpbz8p7.execute-api.us-west-2.amazonaws.com/default/CrearDatos";
+
+            // Enviar la petición GET
+            HttpResponseMessage response = await client.GetAsync(url);
+
+            // Verificar si la petición fue exitosa
+            if (response.IsSuccessStatusCode)
+            {
+                // Obtener el contenido de la respuesta en formato de cadena
+                string content = await response.Content.ReadAsStringAsync();
+
+                // Deserializar el JSON a la clase AppData
+                appData = JsonConvert.DeserializeObject<AppData>(content);
+                appData.TemperatureC = appData.TemperatureC.Substring(0, 4);
+                appData.Humedad = appData.Humedad.Substring(0, 4);
+                appData.Cortada = appData.Cortada.Substring(0, 4);
+                appData.Date = DateTime.Parse(appData.Date).ToString("dd/MM/yyyy");
+                // Forzar la re-renderización del componente después de actualizar appData
+                StateHasChanged();
+            }
+            else
+            {
+                Console.WriteLine("La petición falló.");
+            }
+        }
+    }
+
+    private class AppData
+    {
+        public string? Date { get; set; }
+        public string? TemperatureC { get; set; }
+        public string? Humedad { get; set; }
+        public string? Cortada { get; set; }
+    }
+}
