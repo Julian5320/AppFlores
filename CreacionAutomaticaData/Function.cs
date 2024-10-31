@@ -44,7 +44,7 @@ public class Function
             {
                 // Configura la región
                 RegionEndpoint = Amazon.RegionEndpoint.USWest2,
-                ProxyCredentials = new NetworkCredential("AKIAVAJX5OQH6WU", "MyXgE9LImYMwqBZM4SVz4wldmzfrVPfv/T5FU7+1")
+                ProxyCredentials = new NetworkCredential("{Key-Password}", "{Ket-Secret-Password}")
              };
             AmazonDynamoDBClient client = new AmazonDynamoDBClient(config);
 
