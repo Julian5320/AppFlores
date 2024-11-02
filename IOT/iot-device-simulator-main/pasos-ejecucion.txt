@@ -1,0 +1,51 @@
+
+1. ingresar al repositorio y exportar el directorio de trabajo principal
+
+cd iot-device-simulator
+export MAIN_DIRECTORY=$PWD
+
+2. Declare environment variables
+
+export REGION=us-east-1 # the AWS region to launch the solution (e.g. us-east-1)
+export DIST_BUCKET_PREFIX=iot-device-simulator-$(uuidgen) # bucket where customized code will reside, randomized name recommended
+export SOLUTION_NAME=iot-simulator # the solution name
+export VERSION=1.0 # version number for the customized code
+
+
+aws configure
+
+Instalar las dependencias
+
+cd /source/simulator
+
+npm install
+
+Unit Test (Opcional)
+
+cd $MAIN_DIRECTORY/deployment
+chmod +x run-unit-tests.sh
+./run-unit-tests.sh
+
+Build
+
+cd $MAIN_DIRECTORY/deployment
+chmod +x build-s3-dist.sh
+./build-s3-dist.sh $DIST_BUCKET_PREFIX $SOLUTION_NAME $VERSION
+
+Deploy
+
+aws s3 sync $MAIN_DIRECTORY/deployment/global-s3-assets/ s3://${DIST_BUCKET_PREFIX}-${REGION}/${SOLUTION_NAME}/${VERSION}/
+aws s3 sync $MAIN_DIRECTORY/deployment/regional-s3-assets/ s3://${DIST_BUCKET_PREFIX}-${REGION}/${SOLUTION_NAME}/${VERSION}/
+
+
+export INITIAL_USER=name@example.com # The email used to sign in web interface.
+export CF_STACK_NAME=iot # name of the cloudformation stack
+
+aws cloudformation create-stack \
+   --profile ${AWS_PROFILE:-default} \
+   --region ${REGION} \
+   --template-url https://${DIST_BUCKET_PREFIX}-${REGION}.s3.amazonaws.com/${SOLUTION_NAME}/${VERSION}/iot-device-simulator.template \
+   --stack-name ${CF_STACK_NAME} \
+   --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
+   --parameters \
+        ParameterKey=UserEmail,ParameterValue=${INITIAL_USER}

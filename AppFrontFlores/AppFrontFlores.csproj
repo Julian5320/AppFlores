@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Amazon.CDK.AWS.ApplicationAutoScaling" Version="1.204.0" />
+    <PackageReference Include="Amazon.CDK.AWS.AutoScaling" Version="1.204.0" />
+    <PackageReference Include="Amazon.CDK.AWS.AutoScaling.HookTargets" Version="1.204.0" />
+    <PackageReference Include="Amazon.CDK.AWS.EC2" Version="1.204.0" />
+    <PackageReference Include="Amazon.CDK.AWS.ElasticLoadBalancingV2" Version="1.204.0" />
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.401.14" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.301" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Amazon.CDK" Version="1.204.0" />
+    <PackageReference Include="Amazon.CDK.AWS.APIGateway" Version="1.204.0" />
+    <PackageReference Include="Amazon.CDK.AWS.DynamoDB" Version="1.204.0" />
+    <PackageReference Include="AWSSDK" Version="2.3.55.2" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.401.14" />
+    <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="3.1.16" />
+    <PackageReference Include="Amazon.CDK.AWS.AutoScaling" Version="1.204.0" />
+
+  </ItemGroup>
+
+</Project>
